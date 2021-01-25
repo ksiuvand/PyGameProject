@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 
+
 size = width, height = 800, 500
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
@@ -106,7 +107,9 @@ def load_level(name):
 
 
 def draw_level(level_map):
-    new_player, x, y = None, None, None
+    new_player = None
+    x = None
+    y = None
     for y in range(len(level_map)):
         for x in range(len(level_map[y])):
             if level_map[y][x] == '.':
@@ -134,8 +137,11 @@ def draw_level(level_map):
             elif level_map[y][x] == ')':
                 Tile('trava.png', x, y)
                 xleb3 = Xleb3(x, y)
+            elif level_map[y][x] == '?':
+                Tile('trava.png', x, y)
+                xleb4 = Xleb4(x, y)
 
-    return new_player, x, y, brokoli, xleb, xleb2, brokoli2, brokoli3, xleb3
+    return new_player, x, y, brokoli, xleb, xleb2, brokoli2, brokoli3, xleb3, xleb4
 
 
 class Tile(pygame.sprite.Sprite):
@@ -155,22 +161,33 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.rect.move(50 * pos_x + 10, 50 * pos_y)
 
         self.add(player_group, all_sprites)
-        self.wallcoords = [(10, 50), (210, 100), (260, 100), (310, 100), (360, 100), (410, 100), (460, 100), (510, 100),
-                           (560, 100), (660, 150), (710, 150), (760, 150), (160, 150), (110, 150), (60, 150), (10, 150),
+
+        self.wallcoords = [(10, 50), (210, 100), (260, 100), (310, 100),
+                           (360, 100), (410, 100), (460, 100), (510, 100),
+                           (560, 100), (660, 150), (710, 150), (760, 150),
+                           (160, 150), (110, 150), (60, 150), (10, 150),
                            (210, 150), (210, 200),
-                           (260, 200), (310, 200), (360, 200), (360, 250), (410, 250), (460, 250), (510, 250),
+                           (260, 200), (310, 200), (360, 200), (360, 250),
+                           (410, 250), (460, 250), (510, 250),
                            (60, 250), (110, 250), (360, 350),
-                           (310, 350), (260, 350), (210, 350), (210, 300), (160, 300), (110, 300), (510, 350),
-                           (560, 350), (660, 350), (710, 350), (710, 300), (710, 250), (610, 350), (110, 400),
+                           (310, 350), (260, 350), (210, 350), (210, 300),
+                           (160, 300), (110, 300), (510, 350),
+                           (560, 350), (660, 350), (710, 350), (710, 300),
+                           (710, 250), (610, 350), (110, 400),
                            (10, 300), (760, 300)]
-        self.wallcoords2 = [(360, 200), (310, 200), (410, 200), (460, 200), (510, 200), (10, 300), (60, 300),
+        self.wallcoords2 = [(360, 200), (310, 200), (410, 200), (460, 200),
+                            (510, 200), (10, 300), (60, 300),
                             (110, 300),
-                            (160, 300), (210, 300), (210, 350), (260, 350), (310, 350), (360, 350), (410, 350),
+                            (160, 300), (210, 300), (210, 350), (260, 350),
+                            (310, 350), (360, 350), (410, 350),
                             (460, 350),
                             (510, 350), (660, 350),
-                            (710, 350), (760, 350), (760, 300), (760, 250), (660, 250), (660, 200), (660, 150),
-                            (710, 150), (10, 50), (260, 50), (260, 100), (310, 100), (360, 100), (410, 100),
-                            (510, 100), (160, 150), (110, 150), (10, 150), (210, 250), (160, 250), (110, 250),
+                            (710, 350), (760, 350), (760, 300), (760, 250),
+                            (660, 250), (660, 200), (660, 150),
+                            (710, 150), (10, 50), (260, 50), (260, 100),
+                            (310, 100), (360, 100), (410, 100),
+                            (510, 100), (160, 150), (110, 150), (10, 150),
+                            (210, 250), (160, 250), (110, 250),
                             (510, 300),
                             (760, 150), (510, 50), (510, 250)]
 
@@ -267,8 +284,19 @@ class Xleb(pygame.sprite.Sprite):
         self.add(xleb_group, all_sprites)
 
 
+class Xleb4(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.image = load_image('xleb.png')
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(50 * pos_x, 50 * pos_y)
+
+        self.add(xleb4_group, all_sprites)
+
+
 def level1():
-    player, level_x, level_y, brokoli, xleb, xleb2, brokoli2, brokoli3, xleb3 = draw_level(load_level('level.txt'))
+    player, level_x, level_y, brokoli, xleb, xleb2, brokoli2, brokoli3, xleb3, \
+                        xleb4 = draw_level(load_level('level.txt'))
     global c
 
     running = True
@@ -276,16 +304,35 @@ def level1():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_UP or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_w:
                 player.move_up()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_DOWN or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_s:
                 player.move_down()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_LEFT or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_a:
                 player.move_left()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_RIGHT or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_d:
                 player.move_reight()
-        if not pygame.sprite.collide_rect(player, xleb) and not pygame.sprite.collide_rect(player, xleb2) and\
-                not pygame.sprite.collide_rect(player, xleb3):
+        if not pygame.sprite.collide_rect(player, xleb) and\
+                not pygame.sprite.collide_rect(player, xleb2) and\
+                not pygame.sprite.collide_rect(player, xleb3) and\
+                not pygame.sprite.collide_rect(player, xleb4):
+
             screen.fill(pygame.Color(0, 0, 0))
             tiles_group.draw(screen)
             player_group.draw(screen)
@@ -295,6 +342,7 @@ def level1():
             xleb_group.draw(screen)
             xleb2_group.draw(screen)
             xleb3_group.draw(screen)
+            xleb4_group.draw(screen)
         else:
             all_sprites.empty()
             tiles_group.empty()
@@ -305,10 +353,13 @@ def level1():
             xleb_group.empty()
             xleb2_group.empty()
             xleb3_group.empty()
+            xleb4_group.empty()
             gameover()
 
-        if not pygame.sprite.collide_rect(player, brokoli) and not pygame.sprite.collide_rect(player, brokoli2) and \
+        if not pygame.sprite.collide_rect(player, brokoli) and \
+                not pygame.sprite.collide_rect(player, brokoli2) and \
                 not pygame.sprite.collide_rect(player, brokoli3):
+
             screen.fill(pygame.Color(0, 0, 0))
             tiles_group.draw(screen)
             player_group.draw(screen)
@@ -318,6 +369,7 @@ def level1():
             xleb_group.draw(screen)
             xleb2_group.draw(screen)
             xleb3_group.draw(screen)
+            xleb4_group.draw(screen)
         else:
             all_sprites.empty()
             tiles_group.empty()
@@ -328,6 +380,7 @@ def level1():
             xleb_group.empty()
             xleb2_group.empty()
             xleb3_group.empty()
+            xleb4_group.empty()
             win1()
             level2()
 
@@ -336,24 +389,44 @@ def level1():
 
 
 def level2():
-    player, level_x, level_y, brokoli, xleb, xleb2, brokoli2, brokoli3, xleb3 = draw_level(load_level('level2.txt'))
+    player, level_x, level_y, brokoli, xleb, xleb2, brokoli2, brokoli3, xleb3,\
+        xleb4 = draw_level(load_level('level2.txt'))
 
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_UP or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_w:
                 player.move_up2()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_DOWN or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_s:
                 player.move_down2()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_LEFT or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_a:
                 player.move_left2()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+
+            if event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_RIGHT or\
+                    event.type == pygame.KEYDOWN and \
+                    event.key == pygame.K_d:
                 player.move_reight2()
 
-            if not pygame.sprite.collide_rect(player, xleb) and not pygame.sprite.collide_rect(player, xleb2) and \
-                                                                not pygame.sprite.collide_rect(player, xleb3):
+            if not pygame.sprite.collide_rect(player, xleb) and \
+                    not pygame.sprite.collide_rect(player, xleb2) and \
+                    not pygame.sprite.collide_rect(player, xleb3) and\
+                    not pygame.sprite.collide_rect(player, xleb4):
+
                 screen.fill(pygame.Color(0, 0, 0))
                 tiles_group.draw(screen)
                 player_group.draw(screen)
@@ -363,6 +436,7 @@ def level2():
                 xleb_group.draw(screen)
                 xleb2_group.draw(screen)
                 xleb3_group.draw(screen)
+                xleb4_group.draw(screen)
             else:
                 all_sprites.empty()
                 tiles_group.empty()
@@ -373,19 +447,24 @@ def level2():
                 xleb_group.empty()
                 xleb2_group.empty()
                 xleb3_group.empty()
+                xleb4_group.empty()
                 gameover()
 
-            if not pygame.sprite.collide_rect(player, brokoli) and not pygame.sprite.collide_rect(player,brokoli2) and \
+            if not pygame.sprite.collide_rect(player, brokoli) and \
+                    not pygame.sprite.collide_rect(player, brokoli2) and \
                     not pygame.sprite.collide_rect(player, brokoli3):
+
                 screen.fill(pygame.Color(0, 0, 0))
                 tiles_group.draw(screen)
                 player_group.draw(screen)
                 brokoli_group.draw(screen)
                 brokoli2_group.draw(screen)
                 brokoli3_group.draw(screen)
+                brokoli3_group.draw(screen)
                 xleb_group.draw(screen)
                 xleb2_group.draw(screen)
                 xleb3_group.draw(screen)
+                xleb4_group.draw(screen)
             else:
                 all_sprites.empty()
                 tiles_group.empty()
@@ -396,6 +475,7 @@ def level2():
                 xleb_group.empty()
                 xleb2_group.empty()
                 xleb3_group.empty()
+                xleb4_group.empty()
                 win2()
                 terminate()
 
@@ -406,12 +486,16 @@ def level2():
 all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
+
 brokoli_group = pygame.sprite.Group()
 brokoli2_group = pygame.sprite.Group()
 brokoli3_group = pygame.sprite.Group()
+
 xleb_group = pygame.sprite.Group()
 xleb2_group = pygame.sprite.Group()
 xleb3_group = pygame.sprite.Group()
+xleb4_group = pygame.sprite.Group()
+
 start_screen()
 level1()
 terminate()
